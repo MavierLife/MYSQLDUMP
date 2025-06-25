@@ -5,7 +5,7 @@ a = Analysis(
     ['dump.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('icon.png', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['icon.ico'],
 )

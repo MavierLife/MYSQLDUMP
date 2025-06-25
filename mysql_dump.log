@@ -210,3 +210,223 @@
 2025-06-25 12:10:58,231 - INFO - Conexión a MySQL exitosa
 2025-06-25 12:10:58,241 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
 2025-06-25 12:10:58,242 - ERROR - Fallo al crear el dump
+2025-06-25 12:13:18,612 - INFO - Iniciando dump programado...
+2025-06-25 12:13:18,617 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:13:18,646 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:13:18,646 - ERROR - Fallo al crear el dump
+2025-06-25 12:15:58,450 - INFO - Iniciando dump programado...
+2025-06-25 12:15:58,452 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:15:58,471 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:15:58,471 - ERROR - Fallo al crear el dump
+2025-06-25 12:18:18,815 - INFO - Iniciando dump programado...
+2025-06-25 12:18:18,822 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:18:18,854 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:18:18,854 - ERROR - Fallo al crear el dump
+2025-06-25 12:20:58,772 - INFO - Iniciando dump programado...
+2025-06-25 12:20:58,774 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:20:58,782 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:20:58,782 - ERROR - Fallo al crear el dump
+2025-06-25 12:23:19,098 - INFO - Iniciando dump programado...
+2025-06-25 12:23:19,102 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:23:19,125 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:23:19,125 - ERROR - Fallo al crear el dump
+2025-06-25 12:25:59,063 - INFO - Iniciando dump programado...
+2025-06-25 12:25:59,065 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:25:59,073 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:25:59,074 - ERROR - Fallo al crear el dump
+2025-06-25 12:28:19,534 - INFO - Iniciando dump programado...
+2025-06-25 12:28:19,539 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:28:19,570 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:28:19,571 - ERROR - Fallo al crear el dump
+2025-06-25 12:30:59,348 - INFO - Iniciando dump programado...
+2025-06-25 12:30:59,352 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:30:59,361 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:30:59,362 - ERROR - Fallo al crear el dump
+2025-06-25 12:33:19,948 - INFO - Iniciando dump programado...
+2025-06-25 12:33:19,955 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:33:19,974 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:33:19,974 - ERROR - Fallo al crear el dump
+2025-06-25 12:35:59,706 - INFO - Iniciando dump programado...
+2025-06-25 12:35:59,712 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:35:59,733 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:35:59,735 - ERROR - Fallo al crear el dump
+2025-06-25 12:38:20,292 - INFO - Iniciando dump programado...
+2025-06-25 12:38:20,298 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:38:20,328 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:38:20,329 - ERROR - Fallo al crear el dump
+2025-06-25 12:41:00,243 - INFO - Iniciando dump programado...
+2025-06-25 12:41:00,248 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:41:00,257 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:41:00,257 - ERROR - Fallo al crear el dump
+2025-06-25 12:43:20,848 - INFO - Iniciando dump programado...
+2025-06-25 12:43:20,850 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:43:20,858 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:43:20,858 - ERROR - Fallo al crear el dump
+2025-06-25 12:46:00,759 - INFO - Iniciando dump programado...
+2025-06-25 12:46:00,764 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:46:00,776 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:46:00,777 - ERROR - Fallo al crear el dump
+2025-06-25 12:48:21,385 - INFO - Iniciando dump programado...
+2025-06-25 12:48:21,387 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:48:21,396 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:48:21,396 - ERROR - Fallo al crear el dump
+2025-06-25 12:51:01,045 - INFO - Iniciando dump programado...
+2025-06-25 12:51:01,052 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:51:01,076 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:51:01,077 - ERROR - Fallo al crear el dump
+2025-06-25 12:53:21,663 - INFO - Iniciando dump programado...
+2025-06-25 12:53:21,667 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:53:21,685 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:53:21,686 - ERROR - Fallo al crear el dump
+2025-06-25 12:56:01,304 - INFO - Iniciando dump programado...
+2025-06-25 12:56:01,306 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:56:01,319 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:56:01,319 - ERROR - Fallo al crear el dump
+2025-06-25 12:58:21,951 - INFO - Iniciando dump programado...
+2025-06-25 12:58:21,954 - INFO - Conexión a MySQL exitosa
+2025-06-25 12:58:21,969 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 12:58:21,969 - ERROR - Fallo al crear el dump
+2025-06-25 13:01:01,767 - INFO - Iniciando dump programado...
+2025-06-25 13:01:01,774 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:01:01,790 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:01:01,791 - ERROR - Fallo al crear el dump
+2025-06-25 13:03:22,340 - INFO - Iniciando dump programado...
+2025-06-25 13:03:22,349 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:03:22,360 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:03:22,361 - ERROR - Fallo al crear el dump
+2025-06-25 13:06:02,012 - INFO - Iniciando dump programado...
+2025-06-25 13:06:02,023 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:06:02,032 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:06:02,033 - ERROR - Fallo al crear el dump
+2025-06-25 13:08:22,542 - INFO - Iniciando dump programado...
+2025-06-25 13:08:22,546 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:08:22,563 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:08:22,563 - ERROR - Fallo al crear el dump
+2025-06-25 13:11:02,234 - INFO - Iniciando dump programado...
+2025-06-25 13:11:02,240 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:11:02,269 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:11:02,270 - ERROR - Fallo al crear el dump
+2025-06-25 13:13:22,745 - INFO - Iniciando dump programado...
+2025-06-25 13:13:22,753 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:13:22,767 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:13:22,768 - ERROR - Fallo al crear el dump
+2025-06-25 13:16:02,488 - INFO - Iniciando dump programado...
+2025-06-25 13:16:02,491 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:16:02,508 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:16:02,508 - ERROR - Fallo al crear el dump
+2025-06-25 13:18:23,005 - INFO - Iniciando dump programado...
+2025-06-25 13:18:23,012 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:18:23,033 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:18:23,033 - ERROR - Fallo al crear el dump
+2025-06-25 13:21:02,858 - INFO - Iniciando dump programado...
+2025-06-25 13:21:02,860 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:21:02,871 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:21:02,871 - ERROR - Fallo al crear el dump
+2025-06-25 13:23:23,431 - INFO - Iniciando dump programado...
+2025-06-25 13:23:23,435 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:23:23,457 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:23:23,458 - ERROR - Fallo al crear el dump
+2025-06-25 13:26:03,142 - INFO - Iniciando dump programado...
+2025-06-25 13:26:03,147 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:26:03,171 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:26:03,174 - ERROR - Fallo al crear el dump
+2025-06-25 13:28:23,764 - INFO - Iniciando dump programado...
+2025-06-25 13:28:23,770 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:28:23,802 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:28:23,803 - ERROR - Fallo al crear el dump
+2025-06-25 13:31:03,359 - INFO - Iniciando dump programado...
+2025-06-25 13:31:03,365 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:31:03,401 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:31:03,402 - ERROR - Fallo al crear el dump
+2025-06-25 13:33:24,163 - INFO - Iniciando dump programado...
+2025-06-25 13:33:24,167 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:33:24,190 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:33:24,191 - ERROR - Fallo al crear el dump
+2025-06-25 13:36:03,587 - INFO - Iniciando dump programado...
+2025-06-25 13:36:03,591 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:36:03,614 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:36:03,614 - ERROR - Fallo al crear el dump
+2025-06-25 13:38:24,462 - INFO - Iniciando dump programado...
+2025-06-25 13:38:24,469 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:38:24,498 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:38:24,498 - ERROR - Fallo al crear el dump
+2025-06-25 13:41:03,857 - INFO - Iniciando dump programado...
+2025-06-25 13:41:03,863 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:41:03,890 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:41:03,891 - ERROR - Fallo al crear el dump
+2025-06-25 13:43:24,671 - INFO - Iniciando dump programado...
+2025-06-25 13:43:24,675 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:43:24,703 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:43:24,704 - ERROR - Fallo al crear el dump
+2025-06-25 13:46:04,187 - INFO - Iniciando dump programado...
+2025-06-25 13:46:04,191 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:46:04,213 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:46:04,214 - ERROR - Fallo al crear el dump
+2025-06-25 13:48:24,886 - INFO - Iniciando dump programado...
+2025-06-25 13:48:24,891 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:48:24,911 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:48:24,912 - ERROR - Fallo al crear el dump
+2025-06-25 13:51:04,559 - INFO - Iniciando dump programado...
+2025-06-25 13:51:04,562 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:51:04,578 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:51:04,579 - ERROR - Fallo al crear el dump
+2025-06-25 13:53:25,157 - INFO - Iniciando dump programado...
+2025-06-25 13:53:25,161 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:53:25,176 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:53:25,176 - ERROR - Fallo al crear el dump
+2025-06-25 13:56:04,771 - INFO - Iniciando dump programado...
+2025-06-25 13:56:04,775 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:56:04,794 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:56:04,795 - ERROR - Fallo al crear el dump
+2025-06-25 13:58:25,364 - INFO - Iniciando dump programado...
+2025-06-25 13:58:25,371 - INFO - Conexión a MySQL exitosa
+2025-06-25 13:58:25,400 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 13:58:25,401 - ERROR - Fallo al crear el dump
+2025-06-25 14:01:05,011 - INFO - Iniciando dump programado...
+2025-06-25 14:01:05,017 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:01:05,034 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:01:05,035 - ERROR - Fallo al crear el dump
+2025-06-25 14:03:25,684 - INFO - Iniciando dump programado...
+2025-06-25 14:03:25,686 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:03:25,693 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:03:25,693 - ERROR - Fallo al crear el dump
+2025-06-25 14:06:05,336 - INFO - Iniciando dump programado...
+2025-06-25 14:06:05,338 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:06:05,345 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:06:05,345 - ERROR - Fallo al crear el dump
+2025-06-25 14:08:25,957 - INFO - Iniciando dump programado...
+2025-06-25 14:08:25,963 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:08:25,993 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:08:25,993 - ERROR - Fallo al crear el dump
+2025-06-25 14:11:05,541 - INFO - Iniciando dump programado...
+2025-06-25 14:11:05,548 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:11:05,579 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:11:05,580 - ERROR - Fallo al crear el dump
+2025-06-25 14:13:26,189 - INFO - Iniciando dump programado...
+2025-06-25 14:13:26,199 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:13:26,220 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:13:26,221 - ERROR - Fallo al crear el dump
+2025-06-25 14:16:05,853 - INFO - Iniciando dump programado...
+2025-06-25 14:16:05,856 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:16:05,866 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:16:05,867 - ERROR - Fallo al crear el dump
+2025-06-25 14:18:26,400 - INFO - Iniciando dump programado...
+2025-06-25 14:18:26,407 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:18:26,439 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:18:26,441 - ERROR - Fallo al crear el dump
+2025-06-25 14:21:06,077 - INFO - Iniciando dump programado...
+2025-06-25 14:21:06,081 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:21:06,098 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:21:06,098 - ERROR - Fallo al crear el dump
+2025-06-25 14:23:26,642 - INFO - Iniciando dump programado...
+2025-06-25 14:23:26,649 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:23:26,678 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:23:26,680 - ERROR - Fallo al crear el dump
+2025-06-25 14:26:06,283 - INFO - Iniciando dump programado...
+2025-06-25 14:26:06,286 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:26:06,299 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:26:06,300 - ERROR - Fallo al crear el dump
+2025-06-25 14:28:26,850 - INFO - Iniciando dump programado...
+2025-06-25 14:28:26,857 - INFO - Conexión a MySQL exitosa
+2025-06-25 14:28:26,887 - ERROR - Error durante el dump: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-06-25 14:28:26,889 - ERROR - Fallo al crear el dump
