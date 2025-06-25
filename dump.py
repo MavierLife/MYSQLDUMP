@@ -8,6 +8,7 @@ from datetime import datetime
 import logging
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import json
 
 
 class TextHandler(logging.Handler):
@@ -27,7 +28,7 @@ class TextHandler(logging.Handler):
 
 
 class MySQLDumpScheduler:
-    def __init__(self, config, dump_dir, interval, logger):
+    def __init__(self, config, dump_dir, interval, logger, max_copies=7):
         self.host = config['host']
         self.user = config['user']
         self.password = config['password']
@@ -36,6 +37,7 @@ class MySQLDumpScheduler:
         self.interval = interval
         self.logger = logger
         self.running = False
+        self.max_copies = max_copies
 
         if not os.path.exists(dump_dir):
             os.makedirs(dump_dir)
@@ -85,14 +87,24 @@ class MySQLDumpScheduler:
         except Exception as e:
             self.logger.exception("Excepción durante la creación del dump")
 
-    def cleanup(self, keep_days=7):
-        now = time.time()
-        for file in os.listdir(self.dump_dir):
-            if file.endswith('.sql'):
-                fp = os.path.join(self.dump_dir, file)
-                if now - os.path.getmtime(fp) > keep_days * 86400:
-                    os.remove(fp)
-                    self.logger.info(f"Dump antiguo eliminado: {file}")
+    def cleanup(self):
+        # Elimina los dumps más antiguos si superan max_copies
+        files = [f for f in os.listdir(self.dump_dir) if f.endswith('.sql')]
+        if len(files) <= self.max_copies:
+            return
+
+        # Ordenar por fecha de modificación (más antiguo primero)
+        full_paths = [os.path.join(self.dump_dir, f) for f in files]
+        full_paths.sort(key=os.path.getmtime)
+
+        # Calcular cuántos eliminar
+        to_remove = len(full_paths) - self.max_copies
+        for fp in full_paths[:to_remove]:
+            try:
+                os.remove(fp)
+                self.logger.info(f"Dump eliminado por exceso: {os.path.basename(fp)}")
+            except Exception as e:
+                self.logger.error(f"No se pudo eliminar {fp}: {e}")
 
     def scheduled_task(self):
         if not self.running:
@@ -123,7 +135,13 @@ class MySQLDumpScheduler:
 
 
 class App(tk.Tk):
+    # Ahora apuntamos a Documents\config\config.json
+    CONFIG_DIR  = os.path.join(os.path.expanduser("~"), "Documents", "config")
+    CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
+
     def __init__(self):
+        # Cargo config antes de crear los widgets
+        self._load_config()
         super().__init__()
         self.title("MySQL Dump Scheduler")
         self.geometry("600x500")
@@ -138,6 +156,8 @@ class App(tk.Tk):
         self.logger.addHandler(handler)
         self.logger.info("Aplicación iniciada")
 
+        # Atajo cierre para guardar config
+        self.protocol("WM_DELETE_WINDOW", self._on_close)
         self.scheduler = None
 
     def create_widgets(self):
@@ -149,24 +169,30 @@ class App(tk.Tk):
         for i, text in enumerate(labels):
             tk.Label(frm, text=text).grid(row=i, column=0, sticky='w')
 
-        self.host_var = tk.StringVar(value="127.0.0.1")
+        # Valores por defecto desde config o fijo
+        self.host_var = tk.StringVar(value=self.config.get("host", "127.0.0.1"))
         tk.Entry(frm, textvariable=self.host_var).grid(row=0, column=1, sticky='we')
 
-        self.user_var = tk.StringVar(value="access_permit")
+        self.user_var = tk.StringVar(value=self.config.get("user", "access_permit"))
         tk.Entry(frm, textvariable=self.user_var).grid(row=1, column=1, sticky='we')
 
-        self.pass_var = tk.StringVar(value="3VTnUWWQaIp!YgHB")
+        self.pass_var = tk.StringVar(value=self.config.get("password", ""))
         tk.Entry(frm, textvariable=self.pass_var, show="*").grid(row=2, column=1, sticky='we')
 
-        self.db_var = tk.StringVar(value="helensystem_data")
+        self.db_var   = tk.StringVar(value=self.config.get("database", "helensystem_data"))
         tk.Entry(frm, textvariable=self.db_var).grid(row=3, column=1, sticky='we')
 
-        self.dir_var = tk.StringVar(value="./dumps")
+        self.dir_var  = tk.StringVar(value=self.config.get("dump_dir", "./dumps"))
         tk.Entry(frm, textvariable=self.dir_var).grid(row=4, column=1, sticky='we')
         tk.Button(frm, text="...", command=self.choose_dir).grid(row=4, column=2)
 
-        self.int_var = tk.IntVar(value=5)
+        self.int_var  = tk.IntVar   (value=self.config.get("interval", 5))
         tk.Entry(frm, textvariable=self.int_var).grid(row=5, column=1, sticky='we')
+
+        # Nuevo campo: Máximo de copias
+        tk.Label(frm, text="Máx. copias").grid(row=6, column=0, sticky='w')
+        self.max_var  = tk.IntVar   (value=self.config.get("max_copies", 7))
+        tk.Entry(frm, textvariable=self.max_var).grid(row=6, column=1, sticky='we')
 
         # Botones de control
         btn_frm = tk.Frame(self)
@@ -174,6 +200,8 @@ class App(tk.Tk):
         tk.Button(btn_frm, text="Iniciar", command=self.start_scheduler).pack(side='left', padx=5)
         tk.Button(btn_frm, text="Detener", command=self.stop_scheduler).pack(side='left', padx=5)
         tk.Button(btn_frm, text="Dump Ahora", command=self.manual_dump).pack(side='left', padx=5)
+        # --- Nuevo: Botón para guardar config manualmente ---
+        tk.Button(btn_frm, text="Guardar Configuración", command=self._guardar_config).pack(side='left', padx=5)
 
         # Area de log
         self.log_text = tk.Text(self, state='disabled')
@@ -191,14 +219,21 @@ class App(tk.Tk):
             'password': self.pass_var.get(),
             'database': self.db_var.get()
         }
-        dump_dir = self.dir_var.get()
-        interval = self.int_var.get()
+        dump_dir   = self.dir_var.get()
+        interval   = self.int_var.get()
+        max_copies = self.max_var.get()
 
         if self.scheduler and self.scheduler.running:
             messagebox.showwarning("Atención", "El scheduler ya está corriendo")
             return
 
-        self.scheduler = MySQLDumpScheduler(config, dump_dir, interval, self.logger)
+        self.scheduler = MySQLDumpScheduler(
+            config,
+            dump_dir,
+            interval,
+            self.logger,
+            max_copies
+        )
         self.scheduler.start()
 
     def stop_scheduler(self):
@@ -211,10 +246,54 @@ class App(tk.Tk):
         if not self.scheduler:
             messagebox.showwarning("Atención", "Inicia el scheduler primero")
             return
-        threading.Thread(
-            target=lambda: [self.scheduler.test_connection() and self.scheduler.create_dump()],
-            daemon=True
-        ).start()
+        # Lanzamos un hilo que haga dump + cleanup
+        threading.Thread(target=self._manual_dump_task, daemon=True).start()
+
+    def _manual_dump_task(self):
+        if self.scheduler.test_connection():
+            self.scheduler.create_dump()
+            self.scheduler.cleanup()
+
+    def _load_config(self):
+        """Carga self.config desde JSON si existe."""
+        try:
+            with open(self.CONFIG_FILE, "r", encoding="utf-8") as f:
+                self.config = json.load(f)
+        except FileNotFoundError:
+            self.config = {}
+
+    def _save_config(self):
+        """Guarda al cerrar los valores actuales."""
+        cfg = {
+            "host":       self.host_var.get(),
+            "user":       self.user_var.get(),
+            "password":   self.pass_var.get(),
+            "database":   self.db_var.get(),
+            "dump_dir":   self.dir_var.get(),
+            "interval":   self.int_var.get(),
+            "max_copies": self.max_var.get()
+        }
+        save_path = self.CONFIG_FILE
+        try:
+            # Asegura que la carpeta exista
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            with open(save_path, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Error al guardar config.json en {save_path}: {e}")
+            messagebox.showerror("Error", f"No se pudo guardar config.json:\n{e}")
+        else:
+            self.logger.info(f"config.json guardado en: {save_path}")
+
+    def _guardar_config(self):
+        """Botón manual para volcar config.json y mostrar ruta."""
+        self._save_config()
+        messagebox.showinfo("Configuración",
+                            f"Archivo guardado en:\n{self.CONFIG_FILE}")
+
+    def _on_close(self):
+        self._save_config()
+        self.destroy()
 
 
 if __name__ == "__main__":
