@@ -28,7 +28,8 @@ class App(ttk.Window):
     CONFIG_DIR  = os.path.join(os.path.expanduser("~"), "Documents", "config")
     CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 
-    def __init__(self):
+    def __init__(self, whatsapp_config=None):
+        self.whatsapp_config = whatsapp_config
         self._load_config()
         super().__init__(themename="litera")
         
@@ -207,31 +208,37 @@ class App(ttk.Window):
             self.dir_var.set(d)
 
     def start_scheduler(self):
-        if self.scheduler and self.scheduler.running:
-            self.logger.info("El scheduler ya se encuentra en ejecución.")
-            return
+        """Inicia el programador de dumps"""
+        try:
+            if self.scheduler and self.scheduler.running:
+                self.logger.info("El scheduler ya se encuentra en ejecución.")
+                return
 
-        self.logger.info("Iniciando scheduler con la configuración actual...")
-        config = {
-            'host': self.host_var.get(),
-            'user': self.user_var.get(),
-            'password': self.pass_var.get(),
-            'database': self.db_var.get()
-        }
-        dump_dir   = self.dir_var.get()
-        interval   = self.int_var.get()
-        max_copies = self.max_var.get()
+            self.logger.info("Iniciando scheduler con la configuración actual...")
+            config = {
+                'host': self.host_var.get(),
+                'user': self.user_var.get(),
+                'password': self.pass_var.get(),
+                'database': self.db_var.get()
+            }
+            dump_dir   = self.dir_var.get()
+            interval   = self.int_var.get()
+            max_copies = self.max_var.get()
 
-        self.scheduler = MySQLDumpScheduler(
-            config,
-            dump_dir,
-            interval,
-            self.logger,
-            max_copies
-        )
-        # En el método start_scheduler, después de crear el scheduler:
-        self.scheduler.enable_security_validation(self.security_enabled_var.get())
-        self.scheduler.start()
+            self.scheduler = MySQLDumpScheduler(
+                config=config,
+                dump_dir=dump_dir,
+                interval=interval,
+                logger=self.logger,
+                max_copies=7,
+                whatsapp_config=self.whatsapp_config
+            )
+            # En el método start_scheduler, después de crear el scheduler:
+            self.scheduler.enable_security_validation(self.security_enabled_var.get())
+            self.scheduler.start()
+        except Exception as e:
+            self.logger.error(f"Error al iniciar el scheduler: {e}")
+            messagebox.showerror("Error", f"No se pudo iniciar el scheduler:\n{e}", parent=self)
 
     def stop_scheduler(self):
         if self.scheduler:

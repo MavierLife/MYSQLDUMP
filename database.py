@@ -4,13 +4,21 @@ import schedule
 import threading
 import time
 import os
-import glob  # Agregar esta importación
+import glob
 from datetime import datetime
 import logging
 from security import BackupSecurityValidator
 
+# AGREGAR ESTAS IMPORTACIONES PARA WHATSAPP
+try:
+    from twilio.rest import Client
+    TWILIO_AVAILABLE = True
+except ImportError:
+    TWILIO_AVAILABLE = False
+    print("Twilio no está instalado. Instala con: pip install twilio")
+
 class MySQLDumpScheduler:
-    def __init__(self, config, dump_dir, interval, logger, max_copies=7):
+    def __init__(self, config, dump_dir, interval, logger, max_copies=7, whatsapp_config=None):
         self.host = config['host']
         self.user = config['user']
         self.password = config['password']
@@ -26,7 +34,73 @@ class MySQLDumpScheduler:
             self.logger.info(f"Directorio de dumps creado: {dump_dir}")
 
         self.security_validator = BackupSecurityValidator(self.logger)
-        self.security_enabled = True  # Flag para habilitar/deshabilitar validación
+        self.security_enabled = True
+
+        # CONFIGURACIÓN DE WHATSAPP
+        self.whatsapp_enabled = False
+        if whatsapp_config and TWILIO_AVAILABLE:
+            self.setup_whatsapp(whatsapp_config)
+
+    def setup_whatsapp(self, config):
+        """Configura las notificaciones de WhatsApp con Twilio"""
+        try:
+            self.twilio_client = Client(config['account_sid'], config['auth_token'])
+            self.whatsapp_from = config['from_number']
+            
+            # SOPORTAR MÚLTIPLES NÚMEROS
+            if 'to_numbers' in config:
+                self.whatsapp_to = config['to_numbers']  # Lista de números
+            elif 'to_number' in config:
+                self.whatsapp_to = [config['to_number']]  # Un solo número en lista
+            else:
+                raise ValueError("Debe especificar 'to_number' o 'to_numbers'")
+                
+            self.whatsapp_enabled = True
+            self.logger.info(f"WhatsApp configurado para {len(self.whatsapp_to)} número(s)")
+            
+            # Enviar mensaje de prueba (opcional)
+            if config.get('send_test', False):
+                self.send_whatsapp_alert("🔧 Sistema de backup inicializado correctamente. WhatsApp funcionando! ✅")
+                
+        except Exception as e:
+            self.logger.error(f"Error configurando WhatsApp: {e}")
+            self.whatsapp_enabled = False
+
+    def send_whatsapp_alert(self, message):
+        """Envía alerta por WhatsApp a múltiples números usando Twilio"""
+        if not self.whatsapp_enabled:
+            self.logger.warning("WhatsApp no está configurado")
+            return False
+
+        success_count = 0
+        failed_numbers = []
+
+        # Enviar a cada número en la lista
+        for number in self.whatsapp_to:
+            try:
+                message_obj = self.twilio_client.messages.create(
+                    body=message,
+                    from_=f'whatsapp:{self.whatsapp_from}',
+                    to=f'whatsapp:{number}'
+                )
+                self.logger.info(f"WhatsApp enviado a {number}: {message_obj.sid}")
+                success_count += 1
+                
+            except Exception as e:
+                self.logger.error(f"Error enviando WhatsApp a {number}: {e}")
+                failed_numbers.append(number)
+
+        # Reportar resultado
+        total_numbers = len(self.whatsapp_to)
+        if success_count == total_numbers:
+            self.logger.info(f"✅ WhatsApp enviado exitosamente a todos los {total_numbers} números")
+            return True
+        elif success_count > 0:
+            self.logger.warning(f"⚠️ WhatsApp enviado a {success_count}/{total_numbers} números. Fallos: {failed_numbers}")
+            return True  # Parcialmente exitoso
+        else:
+            self.logger.error(f"❌ Error enviando WhatsApp a todos los números: {failed_numbers}")
+            return False
 
     def test_connection(self):
         try:
@@ -91,18 +165,43 @@ class MySQLDumpScheduler:
                     os.remove(dump_file)
                 return False
             
-            # NUEVA VALIDACIÓN DE SEGURIDAD
+            # VALIDACIÓN DE SEGURIDAD CON WHATSAPP
             if self.security_enabled:
                 is_safe, security_message = self.security_validator.validate_before_cleanup(
                     dump_file, self.dump_dir, self.database
                 )
                 
                 if not is_safe:
+                    # CREAR MENSAJE DE ALERTA PARA WHATSAPP
+                    file_size_mb = os.path.getsize(dump_file) / (1024 * 1024)
+                    alert_message = f"""🚨 ALERTA CRÍTICA DE BACKUP 🚨
+
+📊 Base de datos: {self.database}
+🕐 Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+📁 Tamaño del backup: {file_size_mb:.2f} MB
+
+❌ PROBLEMA DETECTADO:
+{security_message}
+
+⚠️ El proceso de backup se detuvo por seguridad.
+
+🔍 Acción requerida:
+- Verificar la integridad de la base de datos
+- Revisar logs del sistema
+- Contactar al administrador si es necesario
+
+💾 El backup actual se mantiene para análisis."""
+
+                    # Enviar por WhatsApp
+                    whatsapp_sent = self.send_whatsapp_alert(alert_message)
+                    
+                    if whatsapp_sent:
+                        self.logger.info("🔔 Alerta crítica enviada por WhatsApp")
+                    else:
+                        self.logger.error("❌ No se pudo enviar alerta por WhatsApp")
+                    
                     self.logger.error(f"ALERTA DE SEGURIDAD: {security_message}")
                     self.logger.error("PROCESO DETENIDO - No se realizará limpieza de backups antiguos")
-                    
-                    # Opcional: también podrías eliminar el backup defectuoso
-                    # os.remove(dump_file)
                     
                     return False
                 else:
@@ -110,10 +209,36 @@ class MySQLDumpScheduler:
             
             file_size = os.path.getsize(dump_file)
             self.logger.info(f"Dump creado exitosamente: {dump_file} ({file_size} bytes)")
+            
+            # NOTIFICAR ÉXITO POR WHATSAPP (opcional)
+            if self.whatsapp_enabled:
+                file_size_mb = file_size / (1024 * 1024)
+                success_message = f"""✅ Backup completado exitosamente
+
+📊 Base de datos: {self.database}
+🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+📁 Tamaño: {file_size_mb:.2f} MB
+🔐 Validación: APROBADA"""
+
+                self.send_whatsapp_alert(success_message)
+            
             return True
             
         except Exception as e:
             self.logger.error(f"Error al crear dump: {e}")
+            
+            # NOTIFICAR ERROR POR WHATSAPP
+            if self.whatsapp_enabled:
+                error_message = f"""❌ ERROR EN BACKUP
+
+📊 Base de datos: {self.database}
+🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+🔴 Error: {str(e)[:100]}...
+
+⚠️ Revisar logs del sistema inmediatamente."""
+
+                self.send_whatsapp_alert(error_message)
+            
             if os.path.exists(dump_file):
                 os.remove(dump_file)
             return False
