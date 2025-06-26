@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['dump.py'],
+    ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('icon.png', '.')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='dump',
+    name='DUMP',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
