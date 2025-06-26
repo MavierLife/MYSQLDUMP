@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 import json
+from datetime import datetime  # ← AGREGAR ESTA LÍNEA
 from PIL import Image
 import pystray
 from database import MySQLDumpScheduler, TextHandler
@@ -28,8 +29,8 @@ class App(ttk.Window):
     CONFIG_DIR  = os.path.join(os.path.expanduser("~"), "Documents", "config")
     CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 
-    def __init__(self, whatsapp_config=None):
-        self.whatsapp_config = whatsapp_config
+    def __init__(self, telegram_config=None):
+        self.telegram_config = telegram_config
         self._load_config()
         super().__init__(themename="litera")
         
@@ -51,16 +52,35 @@ class App(ttk.Window):
         self.logger.addHandler(handler)
         self.logger.info("Aplicación iniciada")
 
-        # Ocultar ventana al inicio y configurar bandeja de sistema
-        self.withdraw()
-        self.after(100, self.start_scheduler)
-        self.protocol("WM_DELETE_WINDOW", self.hide_window)
-        threading.Thread(target=self.setup_tray, daemon=True).start()
-
-        # Establecer el icono de la ventana principal
+        # Mostrar ventana PRIMERO, luego configurar todo lo demás
+        self.deiconify()  # Mostrar ventana inmediatamente
+        self.lift()
+        self.focus_force()
+        
+        # Configurar el icono de la ventana principal
         icon_path = resource_path('icon.png')
         if os.path.exists(icon_path):
             self.iconphoto(False, tk.PhotoImage(file=icon_path))
+
+        # Configurar protocol de cierre
+        self.protocol("WM_DELETE_WINDOW", self.hide_window)
+        
+        # Inicializar todo lo demás de forma asíncrona DESPUÉS de mostrar la ventana
+        self.after(100, self.initialize_background_services)
+
+    def initialize_background_services(self):
+        """Inicializa servicios en segundo plano después de mostrar la ventana"""
+        try:
+            self.logger.info("Inicializando servicios en segundo plano...")
+            
+            # Iniciar bandeja del sistema en hilo separado
+            threading.Thread(target=self.setup_tray, daemon=True).start()
+            
+            # Iniciar scheduler después de un breve delay
+            self.after(500, self.start_scheduler)
+            
+        except Exception as e:
+            self.logger.error(f"Error inicializando servicios: {e}")
 
     def setup_tray(self):
         """Configura y ejecuta el icono en la bandeja del sistema."""
@@ -83,6 +103,9 @@ class App(ttk.Window):
         self.deiconify()
         self.lift()
         self.focus_force()
+        # Asegurar que la ventana esté al frente
+        self.attributes('-topmost', True)
+        self.after(100, lambda: self.attributes('-topmost', False))
 
     def hide_window(self):
         """Oculta la ventana (en lugar de cerrarla)."""
@@ -90,11 +113,42 @@ class App(ttk.Window):
 
     def quit_app(self):
         """Cierra la aplicación completamente."""
-        if self.scheduler:
-            self.scheduler.stop()
-        self.tray_icon.stop()
-        self._save_config()
-        self.destroy()
+        try:
+            # Primero deshabilitar Telegram para evitar múltiples envíos
+            if self.scheduler and self.scheduler.telegram_enabled:
+                # Enviar mensaje de cierre ANTES de detener todo
+                quit_message = f"""🔴 <b>MYHELENBACKUP CERRADO</b>
+
+📊 <b>Base de datos:</b> {self.scheduler.database}
+🕐 <b>Hora de cierre:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+⚠️ <b>MyHelenBackup ha sido cerrado completamente</b>
+💡 Para reanudar los backups, reinicia la aplicación"""
+                
+                # Enviar mensaje inmediatamente
+                self.scheduler.send_telegram_alert(quit_message)
+                
+                # Deshabilitar Telegram para evitar duplicados
+                self.scheduler.telegram_enabled = False
+                
+            # Detener el scheduler SIN enviar más notificaciones
+            if self.scheduler:
+                self.scheduler.stop()
+                
+            # Detener el tray icon
+            if hasattr(self, 'tray_icon'):
+                self.tray_icon.stop()
+                
+            # Guardar configuración
+            self._save_config()
+            
+            # Cerrar aplicación
+            self.destroy()
+            
+        except Exception as e:
+            self.logger.error(f"Error al cerrar aplicación: {e}")
+            # Forzar cierre si hay error
+            self.destroy()
 
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding=15)
@@ -231,7 +285,7 @@ class App(ttk.Window):
                 interval=interval,
                 logger=self.logger,
                 max_copies=7,
-                whatsapp_config=self.whatsapp_config
+                telegram_config=self.telegram_config  # CAMBIAR ESTA LÍNEA
             )
             # En el método start_scheduler, después de crear el scheduler:
             self.scheduler.enable_security_validation(self.security_enabled_var.get())
