@@ -284,8 +284,8 @@ class App(ttk.Window):
                 dump_dir=dump_dir,
                 interval=interval,
                 logger=self.logger,
-                max_copies=7,
-                telegram_config=self.telegram_config  # CAMBIAR ESTA LÍNEA
+                max_copies=max_copies,  # CAMBIAR ESTA LÍNEA: usar max_copies en lugar de 7
+                telegram_config=self.telegram_config
             )
             # En el método start_scheduler, después de crear el scheduler:
             self.scheduler.enable_security_validation(self.security_enabled_var.get())

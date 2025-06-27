@@ -1,0 +1,12 @@
+{
+  "selected_folders": [
+    "C:\\htdocs2\\helensystem"
+  ],
+  "excluded_patterns": [],
+  "folder_exclusions": {
+    "C:\\htdocs2\\helensystem": []
+  },
+  "compression_enabled": true,
+  "max_backup_copies": 10,
+  "backup_format": "zip"
+}

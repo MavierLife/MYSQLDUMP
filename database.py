@@ -5,7 +5,7 @@ import threading
 import time
 import os
 import glob
-from datetime import datetime
+from datetime import datetime, time as dt_time
 import logging
 from security import BackupSecurityValidator
 
@@ -37,6 +37,13 @@ class MySQLDumpScheduler:
         self.telegram_subscribers = set()
         self.subscribers_file = os.path.join(dump_dir, "telegram_subscribers.json")
         self.auto_subscribe = True  # Valor por defecto
+        
+        # CONFIGURACIÓN DE HORARIO NOCTURNO
+        self.night_mode = False
+        self.normal_interval = interval  # Guardar el intervalo original
+        self.night_interval = 60  # Intervalo nocturno: 60 minutos
+        self.night_start_time = dt_time(20, 30)  # 8:30 PM
+        self.night_end_time = dt_time(5, 0)      # 5:00 AM
         
         if telegram_config:
             self.setup_telegram(telegram_config)
@@ -437,22 +444,108 @@ class MySQLDumpScheduler:
         except Exception as e:
             self.logger.error(f"Error durante limpieza: {e}")
     
-    def scheduled_task(self):
-        if not self.running:
-            return schedule.CancelJob
-        self.logger.info("Ejecutando dump programado...")
-        if self.test_connection():
-            self.create_dump()
-            self.cleanup()
+    def is_night_time(self):
+        """Verifica si estamos en horario nocturno"""
+        current_time = datetime.now().time()
+        
+        # Si el horario nocturno cruza medianoche (20:30 - 05:00)
+        if self.night_start_time > self.night_end_time:
+            return current_time >= self.night_start_time or current_time < self.night_end_time
         else:
-            self.logger.error("No se pudo conectar para el dump programado")
+            # Si el horario nocturno NO cruza medianoche
+            return self.night_start_time <= current_time < self.night_end_time
+    
+    def check_night_mode_transition(self):
+        """Verifica y maneja las transiciones entre modo diurno y nocturno"""
+        current_time = datetime.now().time()
+        is_night = self.is_night_time()
+        
+        # Transición a modo nocturno (8:30 PM)
+        if is_night and not self.night_mode:
+            self.enter_night_mode()
+        
+        # Transición a modo diurno (5:00 AM)
+        elif not is_night and self.night_mode:
+            self.exit_night_mode()
+    
+    def enter_night_mode(self):
+        """Activa el modo nocturno"""
+        self.night_mode = True
+        self.logger.info("🌙 ENTRANDO EN MODO NOCTURNO - Intervalo cada 60 minutos")
+        
+        # Reconfigurar scheduler con intervalo nocturno
+        schedule.clear()
+        schedule.every(self.night_interval).minutes.do(self.scheduled_task)
+        
+        # Enviar notificación por Telegram
+        night_start_message = f"""🌙 <b>INICIO DE PERIODO NOCTURNO</b>
 
+📊 <b>Base de datos:</b> {self.database}
+🕐 <b>Hora de inicio:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ <b>Nuevo intervalo:</b> cada {self.night_interval} minutos (1 hora)
+🌅 <b>Fin programado:</b> 05:00 AM
+
+🌙 <b>Modo nocturno activado</b> - Backups menos frecuentes durante la noche"""
+        
+        self.send_telegram_alert(night_start_message)
+    
+    def exit_night_mode(self):
+        """Desactiva el modo nocturno"""
+        self.night_mode = False
+        self.logger.info(f"🌅 SALIENDO DEL MODO NOCTURNO - Volviendo al intervalo normal de {self.normal_interval} minutos")
+        
+        # Reconfigurar scheduler con intervalo normal
+        schedule.clear()
+        schedule.every(self.normal_interval).minutes.do(self.scheduled_task)
+        
+        # Enviar notificación por Telegram
+        night_end_message = f"""🌅 <b>FIN DE PERIODO NOCTURNO</b>
+
+📊 <b>Base de datos:</b> {self.database}
+🕐 <b>Hora de fin:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ <b>Intervalo restaurado:</b> cada {self.normal_interval} minutos
+🌙 <b>Próximo periodo nocturno:</b> 20:30
+
+☀️ <b>Modo diurno restablecido</b> - Backups con frecuencia normal"""
+        
+        self.send_telegram_alert(night_end_message)
+    
+    def scheduled_task(self):
+        """Tarea programada que incluye verificación de modo nocturno"""
+        try:
+            # Verificar transición de modo nocturno ANTES de hacer el backup
+            self.check_night_mode_transition()
+            
+            # Realizar el backup normal
+            if self.test_connection():
+                self.create_dump()
+                if self.security_enabled:
+                    self.cleanup()
+                else:
+                    self._perform_cleanup()
+        except Exception as e:
+            self.logger.error(f"Error en tarea programada: {e}")
+    
     def start(self):
         self.running = True
         schedule.clear()
-        schedule.every(self.interval).minutes.do(self.scheduled_task)
+        
+        # Verificar inmediatamente si estamos en modo nocturno al iniciar
+        if self.is_night_time():
+            self.enter_night_mode()
+        else:
+            # Usar intervalo normal
+            schedule.every(self.normal_interval).minutes.do(self.scheduled_task)
+            
+        # Agregar verificación cada minuto para detectar transiciones
+        schedule.every(1).minutes.do(self.check_night_mode_transition)
+        
         threading.Thread(target=self.run_scheduler, daemon=True).start()
-        self.logger.info(f"Scheduler iniciado cada {self.interval} minutos")
+        
+        current_mode = "NOCTURNO" if self.night_mode else "DIURNO"
+        current_interval = self.night_interval if self.night_mode else self.normal_interval
+        
+        self.logger.info(f"Scheduler iniciado en modo {current_mode} - Intervalo: {current_interval} minutos")
         
         # INICIAR EL LISTENER DE TELEGRAM EN HILO SEPARADO Y CON DELAY
         if self.telegram_enabled and hasattr(self, 'auto_subscribe') and self.auto_subscribe:
@@ -474,15 +567,23 @@ class MySQLDumpScheduler:
     def _send_startup_notification(self):
         """Envía notificación de inicio en hilo separado"""
         try:
-            # Esperar un poco para asegurar que la app esté lista
+            # Esperar un poco para asegurar que la app esté ready
             time.sleep(1)
+            
+            current_mode = "🌙 NOCTURNO" if self.night_mode else "☀️ DIURNO"
+            current_interval = self.night_interval if self.night_mode else self.normal_interval
             
             start_message = f"""🟢 <b>MYHELENBACKUP INICIADO</b>
 
 📊 <b>Base de datos:</b> {self.database}
 🕐 <b>Hora de inicio:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-⏰ <b>Intervalo:</b> cada {self.interval} minutos
+⏰ <b>Intervalo actual:</b> cada {current_interval} minutos
+🌓 <b>Modo actual:</b> {current_mode}
 🔒 <b>Validación de seguridad:</b> {'✅ Habilitada' if self.security_enabled else '❌ Deshabilitada'}
+
+⏰ <b>Horarios automáticos:</b>
+• 🌙 Modo nocturno: 20:30 - 05:00 (cada 60 min)
+• ☀️ Modo diurno: 05:00 - 20:30 (cada {self.normal_interval} min)
 
 🚀 <b>MyHelenBackup está funcionando correctamente</b>"""
             
